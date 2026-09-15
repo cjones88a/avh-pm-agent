@@ -11,7 +11,7 @@
     {
       "name": "pm-agent",
       "source": "./pm_agent",
-      "description": "AVH Contentful migration toolkit: a Linear issue agent focused on turning Figma designs into fully-specified tickets, plus drafting, triage, and estimation skills."
+      "description": "AVH Contentful migration toolkit: a Linear issue agent focused on turning Figma designs into fully-specified tickets (a whole backlog, or the single ticket for one page, decomposed into sub issues when needed), plus drafting and triage skills, all held to a coding-agent readiness bar."
     }
   ]
 }

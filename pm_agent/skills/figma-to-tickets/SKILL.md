@@ -1,24 +1,29 @@
 ---
 name: figma-to-tickets
-description: Turn a Figma file, page, or frame into a batch of fully-specified Linear issues, one per screen/component/pattern. Use when the user shares a Figma link, or asks to turn designs into tickets, a backlog, or a sprint's worth of work.
+description: Turn a Figma file, page, or single frame into fully-specified Linear issues — draft a whole backlog, or draft/update the one issue for a specific page — decomposing a page into sub issues when it's complex enough that a coding agent needs to pick off pieces one at a time. Use when the user shares a Figma link, asks to turn designs into tickets or a backlog, or asks to draft or update the ticket for one page.
 ---
 
 # figma-to-tickets
 
 The AVH Contentful migration is design-driven: the Figma file is the source of
 truth for what gets built, and this skill is how it becomes a working backlog.
-Given a Figma file, page, or frame, walk its structure, agree on ticket
-granularity with the human, and draft one well-formed ticket per unit — grounded
-in what is actually in the file, never in a guess about what a screen probably
-contains.
+It runs in two modes — **batch** (a whole file or page becomes a set of
+tickets) and **single page** (one specific frame becomes exactly one main
+issue, created or updated in place, decomposed into sub issues if the work
+warrants it). Either way, every ticket is grounded in what is actually in the
+file, never in a guess about what a screen probably contains.
 
 ## When to use this
 
-- The user shares a Figma link (file, page, or single frame).
-- The user asks to "turn the designs into tickets," "build the backlog from
-  Figma," or similar.
+- **Batch:** the user shares a Figma file/page link and asks to "turn the
+  designs into tickets," "build the backlog from Figma," or similar.
+- **Single page:** the user shares one specific frame/page link and says
+  "draft the ticket for this page," "update the ticket for this page," or
+  similar — singular, naming one page. This creates or updates exactly one
+  main issue for that page.
 - A previously-created ticket set needs a delta pass after the designs changed
-  (see **Step 5a: re-syncing after a design change** below).
+  (see **Step 7a: re-syncing after a design change** below) — this applies to
+  both modes.
 
 ## Step 1: Read the file
 
@@ -28,13 +33,31 @@ component instances, and comments. If no such tool is available, ask the user
 to paste the page/frame outline (Figma's left-hand layers/pages panel), share
 exports or screenshots of the frames in scope, or grant access another way.
 
+**Note which kind of access you actually got**, and carry that forward into
+every ticket drafted from it: structured design data (Dev Mode MCP, exact
+tokens/spacing/variants) versus screenshots, a shared browser session, or
+manual reading of the layers/properties panels. This isn't just a caveat for
+this step — it becomes each ticket's design-fidelity basis (see Step 5 and
+[[ticket-standards]] section 5), because a "pixel-perfect" acceptance
+criterion means something different, and is verifiable by a coding agent to a
+different degree, depending on which kind of access produced it.
+
 Either way: **never invent a frame's name, content, or behavior you have not
 actually seen.** If something is ambiguous or not visible in what you were
 given, say so and ask rather than filling the gap with a plausible-sounding
 guess. This matters more here than almost anywhere else in the pipeline —
 every ticket's acceptance criteria trace back to what's actually on the canvas.
 
-## Step 2: Decide granularity with the human
+## Step 2: Determine the mode
+
+- If the link is to a whole file or a page containing multiple frames, and the
+  ask is plural ("tickets," "the backlog," "a sprint's worth") → **batch
+  mode** → continue to Step 3.
+- If the link is to one specific frame/page and the ask names it singularly
+  ("the ticket for this page") → **single page mode** → skip Step 3 (there's
+  nothing to batch — the unit of work is fixed) and go straight to Step 4.
+
+## Step 3: Decide granularity with the human (batch mode only)
 
 Before drafting anything, confirm the unit of work with the user via
 AskUserQuestion (or, if unavailable, ask directly in plain language). The
@@ -62,19 +85,60 @@ gets exactly one component ticket, not one per screen it appears on. Before
 drafting, group frames by the components they share and flag any overlap to
 the user.
 
-## Step 3: Check for existing tickets
+## Step 4: Check for an existing issue and content types
 
-Before drafting anything new, check Linear for issues that already cover
+Before drafting anything new, check Linear for an issue that already covers
 a screen or component in scope, so the same design element never gets a
-duplicate ticket. Surface any matches to the user and ask whether to update the
-existing ticket instead of creating a new one.
+duplicate ticket. This includes a ticket that describes the same underlying
+build under a different name, a different granularity, or filed against a
+milestone whose own stated purpose doesn't match what's actually being asked
+for (e.g. real production build work landing in what's meant to be a
+throwaway validation milestone) — not just an identical title.
 
-## Step 4: Draft each ticket
+- **Batch mode:** surface any matches to the user and ask whether to update
+  the existing ticket instead of creating a new one.
+- **Single page mode:** this check IS the fork. If no issue exists for this
+  page, continue to Step 5 as a create. If one already exists, go to **Step
+  4a** instead — you are updating it, not drafting from scratch.
 
-For each screen or component the human confirmed in Step 2, draft a ticket to
-the same bar as **[[draft-ticket]]** and **[[ticket-standards]]** — Cohn
-template, INVEST check, vertical slicing, Definition of Ready. Ground every
-element of the ticket in the Figma file:
+Separately, for any screen/component whose ticket will define or migrate
+into a Contentful content type, check the actual current content model first
+(a Contentful MCP/API if one is available, or the project's content-model
+docs and prior data-modeling tickets) before drafting. A component that
+looks new in Figma (say, a "Stats Card") can already exist in Contentful
+under a different name (say, "Stat/Metric Callout") — ticket the reuse, not
+a redefinition, and flag the naming mismatch to the user rather than quietly
+picking one name.
+
+### Step 4a: Update path (single page mode, issue already exists)
+
+Do not re-draft the ticket from scratch — diff it against the current design.
+
+1. Re-read the frame's current state (Step 1).
+2. Fetch the existing issue (`get_issue`) and its sub issues, if any
+   (`list_issues` with `parentId` set to this issue).
+3. Compare the frame against what the issue currently says. Propose a
+   **patch**, not a wholesale rewrite — use `save_issue`'s `patch`
+   operations so unrelated history in the description isn't destroyed. Call
+   out specifically what changed in the design and what that changes in the
+   ticket (new acceptance criteria, an updated design-fidelity basis, a
+   decision that's now resolved, etc.).
+4. Compare against the existing sub issues (if this issue has any): propose
+   **new** sub issues for work the design now requires that no existing sub
+   issue covers, and **flag** (never auto-cancel) any sub issue whose
+   corresponding design element appears to have been removed. Never touch a
+   sub issue that's already Done or In Progress — surface a note about it
+   instead of editing or reopening it, since the person working it may know
+   something the diff doesn't.
+5. Present the diff — not a full re-draft — for review before writing
+   anything (Step 7).
+
+## Step 5: Draft the ticket
+
+For each screen or component confirmed in Step 2/3 (or the single page in
+single-page mode), draft a ticket to the same bar as **[[draft-ticket]]** and
+**[[ticket-standards]]** — Cohn template, INVEST check, vertical slicing,
+Definition of Ready. Ground every element of the ticket in the Figma file:
 
 - **Title** — the screen/component name as it appears in Figma (or a clear,
   consistent rename if the Figma name is unhelpful — note the rename).
@@ -87,59 +151,140 @@ element of the ticket in the Figma file:
   fixed markup).
 - **Design reference** — the direct Figma link (file + node id) for this
   screen/component, so the ticket always points back to its source of truth.
+- **Design-fidelity basis** — whether this ticket's acceptance criteria came
+  from structured design data or from screenshots/visual inspection only (see
+  Step 1). State it plainly rather than letting a "pixel-perfect" criterion
+  imply a precision the source material can't actually support.
+- **Decisions reserved for a human** — any business, scope, or client-facing
+  choice visible in the design that isn't purely a visual/technical fact (for
+  example, whether a component's structure should stay editor-configurable
+  later, if that came up outside the file itself). List it rather than
+  quietly picking an answer.
 - **Open questions** — anything ambiguous in the design, plus any actual design
   comments found in Figma (quote them, don't paraphrase into something more
   definite than they are).
 
-Apply **[[estimate-ticket]]** to each drafted ticket only if the user asks for
-sizing at this stage; otherwise leave estimation for a follow-up pass so the
-batch review in Step 5 isn't overloaded.
+## Step 6: Decide whether this ticket needs sub issues
 
-## Step 5: Batch review checkpoint
+A page ticket can be well-formed and still be too much for a coding agent to
+pick up and finish in one verifiable pass. Judge **each page on what it
+actually contains** — there is no fixed subtask template or required count.
 
-Present the whole batch of drafted tickets together — not one at a time — so
-the user can review consistency across the set (naming, granularity, any
-missed overlap) before anything is created. Explicitly ask whether the batch
-needs changes; silence is not approval. Only after the user confirms the batch
-does pm-agent create or update the items in Linear, using the Linear MCP
-tools (`save_issue`) — never fabricate an issue ID or claim an item was
-created if the tool call didn't succeed.
+Decompose into sub issues when the page hits one or more of:
 
-### Step 5a: re-syncing after a design change
+- It introduces a **new or modified Contentful content type or field** —
+  that's a distinct, independently-verifiable unit of work from assembling
+  the page around it.
+- It contains **more than one component that must be built or substantially
+  modified** (not just populated with content it can already accept).
+- It has **distinct build phases that are each independently verifiable** —
+  e.g., content-model/data work, then page assembly, then responsive or
+  interaction states — where a coding agent could finish and verify one phase
+  without having done the others.
+- It's large enough that one coding-agent session realistically can't finish
+  *and verify* it in a single pass.
+
+**Skip decomposition** when the page is just existing, already-built
+components being populated with content and none of the above applies — keep
+it as one ticket. Say explicitly that you considered sub issues and why you
+didn't propose any, so the human isn't left wondering whether you forgot.
+
+When you do decompose, propose sub issues sized to what *this* page actually
+needs. Each one must:
+
+- Be **independently completable and verifiable** by a coding agent without
+  needing its siblings finished first — unless a real build-order dependency
+  exists, in which case state it explicitly (a blocking relation between the
+  issues), don't leave it implicit.
+- Meet **[[ticket-standards]] section 5 on its own** — access/environment,
+  a machine-checkable Definition of Done, design-fidelity basis, decisions
+  reserved for a human — not inherited by reference from the parent alone.
+- Have a **title specific enough that a coding agent knows what to do without
+  re-reading the whole parent ticket**, while its description links back to
+  the parent issue for the shared design reference and any decisions reserved
+  for a human, rather than re-pasting the parent's full content.
+
+## Step 7: Review checkpoint
+
+Present the ticket(s) together — not one at a time in batch mode — so the
+user can review consistency across the set (naming, granularity, any missed
+overlap), along with any proposed sub issues and, in the update path, the
+diff from Step 4a. Explicitly ask whether it needs changes; silence is not
+approval.
+
+Only after the user confirms does `pm-agent` write to Linear, using the
+Linear MCP tools (`save_issue`) — never fabricate an issue ID or claim an item
+was created or updated if the tool call didn't succeed. Create the main issue
+first, capture its id, then create each sub issue with `parentId` set to that
+id. In the update path, apply the confirmed patch to the existing issue and
+create only the newly-approved sub issues; never delete or silently alter an
+existing sub issue's state.
+
+### Step 7a: re-syncing after a design change
 
 When the user comes back after the Figma file has changed, don't re-draft the
 whole batch. Re-read the affected pages/frames, diff against what the existing
-tickets describe, and propose only the deltas: new tickets for new
-screens/components, updates for changed ones, and a flagged (never
-auto-closed) list for anything that appears to have been removed from the
-design.
+tickets (and their sub issues) describe, and propose only the deltas: new
+tickets or sub issues for new screens/components/work, updates for changed
+ones, and a flagged (never auto-closed) list for anything that appears to have
+been removed from the design. This is the same mechanism as Step 4a, run
+across a batch instead of one page.
 
 ## Output format
 
-Present each ticket in the batch as:
+Present each main ticket as:
 
 ```
 ### <Title>
 **Type:** User Story | Task
 **Design reference:** <Figma link with node id>
+**Design-fidelity basis:** <structured design data | screenshots/visual inspection only>
 **Intent:** <1–2 sentences>
 **Acceptance criteria:**
 - ...
+**Decisions reserved for a human:**
+- ... (or "None identified")
 **Open questions:**
 - ...
+**Sub issues:** <"None — page only assembles existing components with content" | a list below>
 ```
 
+If sub issues are proposed, list each as:
+
+```
+  - **<Sub issue title>**
+    **Depends on:** <sibling sub issue, or "None">
+    **Acceptance criteria:** ...
+    **Design-fidelity basis:** ...
+    **Decisions reserved for a human:** ... (or "None identified")
+```
+
+For an update (Step 4a), present as a diff instead of a full re-draft: what
+changed in the design, the proposed patch to the ticket, and any new/flagged
+sub issues — not the entire ticket re-stated.
+
 Followed by a short summary line: how many tickets, how many are net-new vs.
-duplicates-avoided, and any granularity overlap that was flagged in Step 2.
+duplicates-avoided-or-updated, how many got sub issues and why, and any
+granularity overlap flagged in Step 3.
 
 ## Rules
 
 - Never invent frame content, copy, or behavior that isn't visible in what you
   were given — ask instead.
 - Never double-count a shared component across multiple screen tickets.
-- Never create or update anything in Linear before the batch-level human
-  confirmation in Step 5.
-- Always check for an existing ticket before drafting a new one for the same
-  screen/component.
+- Never create or update anything in Linear before the human confirmation in
+  Step 7.
+- Always check for an existing issue before drafting a new one for the same
+  screen/component/page.
+- Always check the actual current content model before drafting a ticket that
+  defines a content type — never let two tickets define the same type under
+  different names.
 - Keep every ticket traceable to a specific Figma node, not just "the designs"
   generally.
+- Always state each ticket's design-fidelity basis; never let a
+  "pixel-perfect" acceptance criterion stand without saying whether it's
+  backed by structured design data or by visual inspection only.
+- Decompose into sub issues based on what a page actually contains, not a
+  fixed template — and say explicitly when you considered it and skipped it.
+- Never silently edit, reopen, or cancel a sub issue that's already Done or
+  In Progress — flag it for the human instead.

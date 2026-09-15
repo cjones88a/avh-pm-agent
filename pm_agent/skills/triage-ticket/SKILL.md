@@ -12,6 +12,13 @@ business rules, generic design patterns, and wrong edge cases.
 
 The input is **free-form text**, not JSON. Do not demand a JSON schema. Evaluate
 the prose against the six elements below and rewrite it into a sharper ticket.
+If the ticket may go to a coding agent rather than only a person, also score it
+against the coding-agent readiness checklist in [[ticket-standards]] section 5 —
+that bar catches failure modes INVEST and the six elements don't (missing
+access/environment info, an untestable-by-machine Definition of Done, silent
+duplicates, and business decisions left for the implementer to guess at) — and
+check it against section 6 to see whether it should be a parent ticket with
+sub issues instead of one flat ticket.
 
 ## Pipeline
 
@@ -19,15 +26,21 @@ the prose against the six elements below and rewrite it into a sharper ticket.
   handed here for a quality gate.
 - **Outputs:** a verdict (Ready / Needs work / Not implementable), a scorecard,
   and a sharpened rewrite.
-- **Next step:** once Ready, offer [[estimate-ticket]] to size it and `pm-agent`
-  to post/update it. If it fails on scope (several stories in one), send it back
-  through [[draft-ticket]] to re-slice.
+- **Next step:** once Ready, offer `pm-agent` to post/update it. If it fails
+  on scope (several stories in one), send it back through [[draft-ticket]] to
+  re-slice.
 
 ## How to run
 
 1. Read the pasted ticket. If nothing was pasted, ask the user for the ticket text.
 2. Score each of the six elements (below) as ✅ present / ⚠️ weak / ❌ missing.
-3. Flag every anti-pattern you find, quoting the offending phrase.
+   If this ticket may be agent-bound, also score the coding-agent readiness
+   checklist from [[ticket-standards]] section 5 the same way.
+3. Flag every anti-pattern you find, quoting the offending phrase. This
+   includes checking Linear (not just the pasted text) for an issue that
+   already covers the same underlying scope under a different title or a
+   different level of decomposition — a silent duplicate is as much a defect
+   as a missing acceptance criterion.
 4. Give a verdict: **Ready**, **Needs work**, or **Not implementable**.
 5. Produce a rewritten ticket that fixes the gaps. Where a fact is genuinely
    unknown (a business rule only the author knows), list it as an open question
@@ -77,6 +90,24 @@ the prose against the six elements below and rewrite it into a sharper ticket.
 - ❌ **Untestable acceptance criteria** — cannot be turned into a pass/fail test.
 - ❌ **Multiple stories in one** — several unrelated outcomes bundled together;
   recommend splitting.
+- ❌ **Silent duplicate or overlap** — another ticket already covers this
+  scope, under a different title or a different decomposition.
+- ❌ **Redefines an existing content type** — the ticket proposes a "new"
+  Contentful (or similar) content type that already exists under a
+  different name, without checking the actual current content model first.
+- ❌ **Business decision left for the implementer** — a client-facing or
+  scope tradeoff with no stated answer, that a coding agent would otherwise
+  have to guess at rather than escalate.
+- ❌ **No priority** — without it the ticket can't be sequenced by anyone
+  besides the person who wrote it. This toolkit deliberately has no
+  hour-estimation step, so don't flag a missing estimate as an issue.
+- ❌ **Should be a parent with sub issues, not one flat ticket** — the ticket
+  bundles more than one independently-verifiable build phase (a new content
+  type, several components to build, distinct phases like data model →
+  assembly → responsive states) that a coding agent can't finish and verify
+  in one pass. This is different from "multiple stories in one" — the work
+  belongs together under one parent, it just isn't one unit of work. See
+  [[ticket-standards]] section 6.
 
 ## Output format
 
@@ -92,6 +123,17 @@ the prose against the six elements below and rewrite it into a sharper ticket.
 - Constraints: ✅/⚠️/❌ — <note>
 - NFRs: ✅/⚠️/❌ — <note>
 - Metadata: ✅/⚠️/❌ — <note>
+
+### Coding-agent readiness (if applicable)
+- Access & environment named: ✅/⚠️/❌ — <note>
+- Machine-checkable Definition of Done: ✅/⚠️/❌ — <note>
+- Design-fidelity basis stated: ✅/⚠️/❌ — <note>
+- Decisions reserved for a human: ✅/⚠️/❌ — <note>
+- No duplicate/overlap on the board: ✅/⚠️/❌ — <note>
+- No duplicate/overlapping content type: ✅/⚠️/❌ — <note>
+- Milestone matches actual scope: ✅/⚠️/❌ — <note>
+- Priority set: ✅/⚠️/❌ — <note>
+- Right-sized, or already a parent with sub issues: ✅/⚠️/❌ — <note>
 
 ### Issues found
 1. <issue> — quote: "<offending phrase>"
@@ -111,5 +153,5 @@ The verdict and rewrite are a **draft for the human to review**.
 2. Explicitly ask the human to confirm or correct it — particularly any open
    questions you raised for the author, which only they can answer.
 3. Fold in their input and show the revised version.
-4. Only advance (estimate, or post/update in Linear via `pm-agent`) once the
-   human confirms.
+4. Only advance (post/update in Linear via `pm-agent`) once the human
+   confirms.

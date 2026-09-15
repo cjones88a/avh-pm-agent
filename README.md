@@ -15,7 +15,7 @@ shared Mapleton Hill `mh-agents` marketplace.
 
 | Plugin | Description |
 |---|---|
-| [`pm-agent`](./pm_agent) | AVH Contentful migration toolkit — a Linear issue agent that turns Figma designs into fully-specified tickets, plus drafting/triage/estimation skills. |
+| [`pm-agent`](./pm_agent) | AVH Contentful migration toolkit — a Linear issue agent that turns Figma designs into fully-specified tickets (a whole backlog, or the single ticket for one page, with sub issues when needed), plus drafting/triage skills, held to a coding-agent readiness bar. |
 
 ## Install
 
