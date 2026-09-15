@@ -79,10 +79,10 @@ from the user.
    uniqueness, size/length limits, character restrictions, permissions.
 5. **NFRs** — latency, performance, security, privacy (e.g. "must not log PII"),
    payload limits, cost — whichever apply.
-6. **Metadata** — title, priority, and any author/labels the user provides.
-   Priority is not optional: if the user doesn't state one, ask rather than
-   leaving it blank — an unprioritized ticket can't be sequenced by anyone
-   who didn't write it.
+6. **Metadata** — title, and any author/labels the user provides. This
+   project treats every ticket as equal priority, since all of it needs to
+   be done, so don't ask for one or leave a gap where it would go — the
+   milestone/section a ticket is filed under is what sequences it instead.
 
 ## When this ticket may go to a coding agent
 
@@ -170,7 +170,7 @@ Ask whenever the rough input leaves these unclear:
 ### Open questions
 - <anything still unresolved after the interview, or "None">
 
-**Metadata:** <title / priority (required) / labels / author as provided>
+**Metadata:** <title / labels / author as provided — no priority, every ticket in this project is equal priority>
 
 **Sub issues:** <"None — single independently-verifiable unit of work" | a list, each with its own acceptance criteria, design-fidelity basis if applicable, and decisions reserved for a human>
 ```

@@ -25,7 +25,7 @@ only a person.
 | `review-current-site` | skill | Audits the live aspenvalleyhealth.org site page by page — content, components, third-party integrations — so migration tickets account for what has to survive the move, not just what's in the new design. |
 | `draft-ticket` | skill | Turns one slice or rough idea into a fully-specified story, interviewing you about the gaps first. |
 | `triage-ticket` | skill | Grades an existing ticket for clarity and coding-agent readiness, and rewrites it. |
-| `ticket-standards` | skill | The house quality bar — Cohn template, INVEST, vertical slicing, Definition of Ready, a coding-agent readiness checklist (access/environment named, a machine-checkable Definition of Done, no duplicate tickets or content types, milestone fit, priority set), and when a ticket should become a parent with sub issues instead of one flat ticket. |
+| `ticket-standards` | skill | The house quality bar — Cohn template, INVEST, vertical slicing, Definition of Ready, a coding-agent readiness checklist (access/environment named, a machine-checkable Definition of Done, no duplicate tickets or content types, milestone fit), and when a ticket should become a parent with sub issues instead of one flat ticket. |
 
 ## How the pieces fit together
 
@@ -157,11 +157,14 @@ it automatically as their quality bar.
 figure isn't something a coding agent reads or acts on to do the work
 correctly, and requiring one before a ticket counted as "ready" just added a
 step and burned tokens without changing what the agent could actually
-execute. Priority is different and is still required on every ticket — that's
-the signal that decides what gets picked up next, whether by a person or by
-whatever process is dispatching work to an agent. If you need hours for your
-own budget tracking against the SOW, do that sizing separately, outside this
-pipeline.
+execute. If you need hours for your own budget tracking against the SOW, do
+that sizing separately, outside this pipeline.
+
+**Why there's no priority field either:** every ticket in this project is
+treated as equal priority, since all of it needs to be done. What sequences a
+ticket is the milestone or section it's filed under, not a priority value —
+so the skills don't ask for one, and don't flag a ticket as less ready
+because it's missing.
 
 **How page tickets get decomposed:** `figma-to-tickets` and `draft-ticket`
 judge each ticket on what it actually contains, not a fixed template. A page

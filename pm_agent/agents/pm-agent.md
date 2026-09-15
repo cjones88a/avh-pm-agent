@@ -78,8 +78,10 @@ README for why hour estimates were dropped from the pipeline.
    current Contentful content model before drafting an issue that defines a
    content type, so two issues never define the same type under different
    names.
-7. Always set priority — it should never be left blank on an issue meant to
-   be picked up without the author's own memory to fall back on.
+7. Leave priority unset. This project treats every ticket as equal priority,
+   since all of it needs to be done — don't ask for one, and don't flag a
+   missing priority as a problem. What sequences a ticket is the milestone
+   or section it's filed under.
 8. If the issue was decomposed into sub issues (see [[ticket-standards]]
    section 6), create the main issue first, capture its id, then create each
    sub issue with `parentId` set to that id — never as separate top-level

@@ -98,9 +98,6 @@ sub issues instead of one flat ticket.
 - ❌ **Business decision left for the implementer** — a client-facing or
   scope tradeoff with no stated answer, that a coding agent would otherwise
   have to guess at rather than escalate.
-- ❌ **No priority** — without it the ticket can't be sequenced by anyone
-  besides the person who wrote it. This toolkit deliberately has no
-  hour-estimation step, so don't flag a missing estimate as an issue.
 - ❌ **Should be a parent with sub issues, not one flat ticket** — the ticket
   bundles more than one independently-verifiable build phase (a new content
   type, several components to build, distinct phases like data model →
@@ -108,6 +105,11 @@ sub issues instead of one flat ticket.
   in one pass. This is different from "multiple stories in one" — the work
   belongs together under one parent, it just isn't one unit of work. See
   [[ticket-standards]] section 6.
+
+This project deliberately has no priority field and no hour-estimation step —
+every ticket is equal priority since all of it needs to be done, and an
+estimate isn't something a coding agent consumes to do the work correctly.
+Don't flag a missing priority or a missing estimate as an issue.
 
 ## Output format
 
@@ -132,7 +134,6 @@ sub issues instead of one flat ticket.
 - No duplicate/overlap on the board: ✅/⚠️/❌ — <note>
 - No duplicate/overlapping content type: ✅/⚠️/❌ — <note>
 - Milestone matches actual scope: ✅/⚠️/❌ — <note>
-- Priority set: ✅/⚠️/❌ — <note>
 - Right-sized, or already a parent with sub issues: ✅/⚠️/❌ — <note>
 
 ### Issues found

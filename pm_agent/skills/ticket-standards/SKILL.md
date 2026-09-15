@@ -125,10 +125,12 @@ ready" grade.
       filed under says it's for. A "smoke test" milestone quietly holding
       real production build work is a readiness failure even when the
       ticket itself is well written.
-- [ ] **Priority is set.** A ticket with no priority can't be sequenced by
-      anyone who didn't write it — this toolkit deliberately has no hour
-      estimation step, since an agent doesn't consume that number to do the
-      work correctly; priority is the sequencing signal that matters here.
+- [ ] **Sequencing is clear from the ticket's place in the backlog**, not from
+      a priority field. This project treats every ticket as equal priority,
+      since all of it needs to be done — don't flag a missing priority as a
+      readiness gap. What still needs to be unambiguous is which milestone or
+      section the ticket belongs to, since that ordering is what actually
+      tells a coding agent (or a person) what to pick up next.
 
 If a ticket fails one of these, it can still be fine for a person to pick up,
 but say explicitly that it is not ready to hand to an agent until fixed —
