@@ -17,19 +17,73 @@ file, never in a guess about what a screen probably contains.
 
 - **Batch:** the user shares a Figma file/page link and asks to "turn the
   designs into tickets," "build the backlog from Figma," or similar.
-- **Single page:** the user shares one specific frame/page link and says
-  "draft the ticket for this page," "update the ticket for this page," or
-  similar — singular, naming one page. This creates or updates exactly one
-  main issue for that page.
+- **Single page:** the user shares one specific page URL (the live site page,
+  or a Figma frame) and says "build this page," "draft/update the ticket for
+  this page," or similar — singular, naming one page. This creates or
+  updates exactly one main issue for that page. See **Single page mode: the
+  build a page workflow** below for the exact step order this follows.
 - A previously-created ticket set needs a delta pass after the designs changed
   (see **Step 7a: re-syncing after a design change** below) — this applies to
   both modes.
 
+## Single page mode: the build a page workflow
+
+When the human hands you one page (typically a live site URL) and asks to
+build or update its ticket, run these in order. Each numbered stage below
+maps to one of the detailed steps further down — this section is the
+checklist; the steps below it are how to actually do each one.
+
+1. **Get the page.** The human gives you the URL of the page to build.
+2. **Find or create the ticket.** Check Linear for an existing issue covering
+   this page before drafting anything (Step 4). If one exists, you're
+   updating it (Step 4a), not starting fresh.
+3. **Audit the live site.** Run [[review-current-site]] against the URL to
+   see what content and behavior actually exists today and has to survive
+   the move. Write this into the ticket's migration-scope specs.
+4. **Check Figma for styling.** Read the corresponding Figma frame (Step 1)
+   for the visual/component spec. If the page needs new or modified
+   components, write that as its own subtask (Step 6).
+5. **Check the content model.** Run [[content-model-review]] against the
+   page's content blocks to decide what's reused as-is, extended, or
+   genuinely new in Contentful. Write a subtask for any new/changed type
+   (Step 6).
+6. **Check dependencies.** Look for anything this page needs beyond its own
+   content: reused content entries from another page (not just links —
+   actual shared data, like a location or contact card defined elsewhere),
+   links to pages that may not exist yet, third-party integrations, and
+   assets that haven't been supplied. Note each as a dependency on the
+   ticket, not silently assumed to be handled elsewhere.
+7. **Write the QA subtask(s).** Split by kind, don't lump them into one
+   generic "QA" line: a **content-parity QA** subtask (does the migrated
+   content match the source, are the dependencies from step 6 actually
+   wired up) stays under the same milestone as the page itself; a **design
+   pixel-fidelity QA** subtask (does the build match Figma to the stated
+   tolerance) belongs under milestone **AVH22** instead, since that's the
+   proposal's dedicated design-audit phase, not the page's own migration
+   phase.
+8. **Never lie.** Every claim in the ticket traces back to something you
+   actually read this pass — the live site, the Figma frame, the current
+   Contentful model, or the human. If you didn't check something, say you
+   didn't, don't imply you did.
+9. **List the unknowns.** Anything genuinely unresolved after steps 1 to 8 —
+   an ambiguous Figma comment, a business decision only the client can make,
+   a dependency you couldn't verify — goes under **Open questions**, not
+   filled in with a guess.
+10. **Log it in Linear, organized against the AVH codes.** The ticket (and
+    each subtask) gets filed to project `AVH Contentful`, and its milestone
+    is one of the real proposal codes AVH01 through AVH22 — check
+    [[ticket-standards]] section 5's milestone check and the project's
+    milestone reference before filing, never a placeholder or a guess at
+    which code fits. Page-section milestones (Home, Services, etc., if still
+    in use) track alongside this, not instead of it — check with the human
+    which scheme is current before filing if it's unclear.
+
 ## Step 1: Read the file
 
-If a Figma MCP tool or connector is available in this session, use it to
-enumerate the file's pages and frames, and to read each frame's content,
-component instances, and comments. If no such tool is available, ask the user
+A Figma MCP connector is expected to be set up in this session (see the
+README) — use it as the primary path: enumerate the file's pages and frames,
+and read each frame's content, component instances, and comments directly.
+Only if that connector is genuinely unavailable, fall back to asking the user
 to paste the page/frame outline (Figma's left-hand layers/pages panel), share
 exports or screenshots of the frames in scope, or grant access another way.
 
@@ -102,13 +156,14 @@ throwaway validation milestone) — not just an identical title.
   4a** instead — you are updating it, not drafting from scratch.
 
 Separately, for any screen/component whose ticket will define or migrate
-into a Contentful content type, check the actual current content model first
-(a Contentful MCP/API if one is available, or the project's content-model
-docs and prior data-modeling tickets) before drafting. A component that
-looks new in Figma (say, a "Stats Card") can already exist in Contentful
-under a different name (say, "Stat/Metric Callout") — ticket the reuse, not
-a redefinition, and flag the naming mismatch to the user rather than quietly
-picking one name.
+into a Contentful content type, run [[content-model-review]] before
+drafting — don't re-derive the content-model check inline here. That skill
+reads the real, current model through the Contentful MCP connector and
+decides per block whether it's reused as-is, extended, or genuinely new. A
+component that looks new in Figma (say, a "Stats Card") can already exist in
+Contentful under a different name (say, "Stat/Metric Callout") — ticket the
+reuse, not a redefinition, and flag the naming mismatch to the user rather
+than quietly picking one name.
 
 ### Step 4a: Update path (single page mode, issue already exists)
 
@@ -174,7 +229,9 @@ Decompose into sub issues when the page hits one or more of:
 
 - It introduces a **new or modified Contentful content type or field** —
   that's a distinct, independently-verifiable unit of work from assembling
-  the page around it.
+  the page around it (this is the [[content-model-review]] output, see
+  Step 4 — write it up as its own subtask rather than folding it into the
+  page ticket's body).
 - It contains **more than one component that must be built or substantially
   modified** (not just populated with content it can already accept).
 - It has **distinct build phases that are each independently verifiable** —
@@ -183,11 +240,24 @@ Decompose into sub issues when the page hits one or more of:
   without having done the others.
 - It's large enough that one coding-agent session realistically can't finish
   *and verify* it in a single pass.
+- It has **real dependencies** beyond its own content — a reused content
+  entry from another page, a link to a page that doesn't exist yet, a
+  third-party integration, a missing asset — worth tracking as its own
+  dependency note or subtask rather than left implicit in the page ticket.
 
-**Skip decomposition** when the page is just existing, already-built
-components being populated with content and none of the above applies — keep
-it as one ticket. Say explicitly that you considered sub issues and why you
-didn't propose any, so the human isn't left wondering whether you forgot.
+**Every page ticket also gets a QA pass, split by kind, not lumped
+together:** a **content-parity QA** subtask (migrated content matches the
+source, dependencies are actually wired up) files under the page's own
+milestone; a **design pixel-fidelity QA** subtask (matches Figma to a stated
+tolerance) files under milestone **AVH22** instead — these are different
+checks against different bars and belong to different phases of the
+proposal, even when they're both "QA" on the same page.
+
+**Skip decomposition of the non-QA work** when the page is just existing,
+already-built components being populated with content and none of the above
+applies — keep the build itself as one ticket (the QA split above still
+applies). Say explicitly that you considered sub issues and why you didn't
+propose any beyond QA, so the human isn't left wondering whether you forgot.
 
 When you do decompose, propose sub issues sized to what *this* page actually
 needs. Each one must:
@@ -236,7 +306,8 @@ Present each main ticket as:
 
 ```
 ### <Title>
-**Type:** User Story | Task
+**Type:** Component | Pattern | Task
+**Milestone:** <AVH01–AVH22 code, per the milestone reference>
 **Design reference:** <Figma link with node id>
 **Design-fidelity basis:** <structured design data | screenshots/visual inspection only>
 **Intent:** <1–2 sentences>
@@ -276,9 +347,17 @@ granularity overlap flagged in Step 3.
   Step 7.
 - Always check for an existing issue before drafting a new one for the same
   screen/component/page.
-- Always check the actual current content model before drafting a ticket that
-  defines a content type — never let two tickets define the same type under
-  different names.
+- Always run [[content-model-review]] before drafting a ticket that defines
+  a content type — never re-derive the content-model check inline, and never
+  let two tickets define the same type under different names.
+- Always check for dependencies beyond the page's own content (reused
+  entries, links to other pages, integrations, missing assets) — don't
+  leave them implicit.
+- Always split QA into a content-parity subtask (files under the page's own
+  milestone) and a design pixel-fidelity subtask (files under AVH22) rather
+  than one generic QA line.
+- Every ticket's milestone is a real AVH01–AVH22 proposal code, checked
+  against the milestone reference — never a placeholder.
 - Keep every ticket traceable to a specific Figma node, not just "the designs"
   generally.
 - Always state each ticket's design-fidelity basis; never let a

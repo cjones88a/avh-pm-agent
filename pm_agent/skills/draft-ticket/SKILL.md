@@ -1,6 +1,6 @@
 ---
 name: draft-ticket
-description: Turn a rough feature idea into a fully-defined user story / Jira ticket. Use when the user describes something they want built in loose terms and asks to write, draft, define, or flesh out a ticket or user story. Interviews the user about ambiguities before producing the ticket. Input is free-form text, output is prose (Jira-style), NOT JSON.
+description: Turn a rough feature idea into a fully-defined Linear issue. Use when the user describes something they want built in loose terms and asks to write, draft, define, or flesh out a ticket or user story. Interviews the user about ambiguities before producing the ticket. Input is free-form text, output is prose, NOT JSON.
 ---
 
 # Draft Ticket
@@ -13,7 +13,7 @@ work may go to a coding agent rather than only a person, also hold it to the
 coding-agent readiness checklist in [[ticket-standards]] — see Step 0 and the
 extra output sections below.
 
-The output is **prose** (a Jira-style ticket), not JSON. Do not demand a schema
+The output is **prose** (a Linear issue), not JSON. Do not demand a schema
 from the user.
 
 ## Pipeline
@@ -80,9 +80,9 @@ from the user.
 5. **NFRs** — latency, performance, security, privacy (e.g. "must not log PII"),
    payload limits, cost — whichever apply.
 6. **Metadata** — title, and any author/labels the user provides. This
-   project treats every ticket as equal priority, since all of it needs to
-   be done, so don't ask for one or leave a gap where it would go — the
-   milestone/section a ticket is filed under is what sequences it instead.
+   project has no priority field; don't ask for one and don't leave a gap
+   where it would go. Sequencing comes from backlog position and milestone
+   (the AVH01 through AVH22 proposal phase codes), not from priority.
 
 ## When this ticket may go to a coding agent
 
@@ -170,7 +170,7 @@ Ask whenever the rough input leaves these unclear:
 ### Open questions
 - <anything still unresolved after the interview, or "None">
 
-**Metadata:** <title / labels / author as provided — no priority, every ticket in this project is equal priority>
+**Metadata:** <title / labels / author as provided / milestone (AVH code)>
 
 **Sub issues:** <"None — single independently-verifiable unit of work" | a list, each with its own acceptance criteria, design-fidelity basis if applicable, and decisions reserved for a human>
 ```

@@ -1,7 +1,7 @@
 ---
 name: pm-agent
-description: Product/project-management agent for the AVH Contentful migration. Turns the Figma design file into fully-specified Linear issues (a whole backlog, or the single issue for one page, decomposed into sub issues when it's complex enough), audits the current live site as migration grounding, and drafts and triages individual stories. Use to turn a Figma file or frame into issues, draft or update the issue for one page, review what's on the live aspenvalleyhealth.org site today, draft or triage a single story, or manage AVH issues in Linear.
-tools: mcp__Linear__*, WebFetch, Read, Grep, Glob
+description: Product/project-management agent for the AVH Contentful migration. Turns the Figma design file into fully-specified Linear issues (a whole backlog, or the single issue for one page, decomposed into sub issues when it's complex enough), checks page content against the real Contentful content model, audits the current live site as migration grounding, and drafts and triages individual stories. Use to turn a Figma file or frame into issues, draft or update the issue for one page, check what a page needs from the content model, review what's on the live aspenvalleyhealth.org site today, draft or triage a single story, or manage AVH issues in Linear.
+tools: mcp__Linear__*, mcp__figma__*, mcp__Figma__*, mcp__contentful__*, mcp__Contentful__*, WebFetch, Read, Grep, Glob
 model: sonnet
 ---
 
@@ -35,6 +35,13 @@ Never auto-run the whole chain, and never write to Linear without confirmation.
   exist today. Run this before or alongside figma-to-tickets for a page so
   migration issues account for what has to survive the move, not just what's
   in the new design.
+- **content-model-review** — checks a page's content blocks against the real,
+  current Contentful content model (read directly through the Contentful MCP
+  connector) and decides, per block, whether it reuses an existing type, needs
+  a new field on one, or genuinely needs a new type. figma-to-tickets calls
+  this for its own content-model check (step 4) rather than duplicating the
+  logic; run it directly whenever the question is just "what does this page
+  need from Contentful," with no new ticket involved yet.
 - **draft-ticket** — one slice or rough idea → a full, implementable story. A
   ticket that figma-to-tickets or review-current-site flagged as needing more
   detail goes through this skill next.
@@ -74,14 +81,15 @@ README for why hour estimates were dropped from the pipeline.
    same screen/component so the same design element never gets ticketed twice
    (`list_issues` with a query, or check the project's existing issues) —
    including a broader or differently-decomposed issue that already covers the
-   same underlying work, not just an identical title. Also check the actual
-   current Contentful content model before drafting an issue that defines a
-   content type, so two issues never define the same type under different
-   names.
-7. Leave priority unset. This project treats every ticket as equal priority,
-   since all of it needs to be done — don't ask for one, and don't flag a
-   missing priority as a problem. What sequences a ticket is the milestone
-   or section it's filed under.
+   same underlying work, not just an identical title. Also run
+   [[content-model-review]] (reading the real Contentful content model
+   through the Contentful MCP connector) before drafting an issue that
+   defines a content type, so two issues never define the same type under
+   different names.
+7. This project has no priority field. Every ticket is treated as equal
+   priority; sequencing comes from where the ticket sits in the backlog and
+   milestone, decided by the humans running the project, not from a priority
+   value. Leave priority unset when creating or updating an issue.
 8. If the issue was decomposed into sub issues (see [[ticket-standards]]
    section 6), create the main issue first, capture its id, then create each
    sub issue with `parentId` set to that id — never as separate top-level

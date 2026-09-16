@@ -1,6 +1,6 @@
 ---
 name: ticket-standards
-description: The house standard for a well-formed agile work item — the Cohn user-story template, the INVEST quality check, vertical slicing, the Definition of Ready checklist, a coding-agent readiness bar for tickets an AI agent may implement unsupervised, and when a ticket should become a parent with sub issues instead of one flat ticket. Use when drafting, grooming, or reviewing a user story, bug, or task before it goes on the board, especially before handing it to a coding agent.
+description: The house standard for a well-formed Linear issue — the Cohn user-story template, the INVEST quality check, vertical slicing, the Definition of Ready checklist, a coding-agent readiness bar for tickets an AI agent may implement unsupervised, and when an issue should become a parent with sub issues instead of one flat ticket. Use when drafting, grooming, or reviewing a Linear issue before it goes on the board, especially before handing it to a coding agent.
 ---
 
 # Ticket Standards
@@ -55,6 +55,13 @@ horizontal layer on its own.
 
 If a story is really a horizontal slice, either fold it into the vertical story
 it serves or re-cut the work so each ticket stands up on its own.
+
+## A note on priority
+
+This project has no priority field, on any ticket, ever. Sequencing comes
+from backlog position and milestone (the AVH01 through AVH22 proposal phase
+codes), decided by the humans running the project, not from a priority
+value. Nothing below should be read as requiring one.
 
 ## 4. Definition of Ready checklist
 
@@ -125,12 +132,12 @@ ready" grade.
       filed under says it's for. A "smoke test" milestone quietly holding
       real production build work is a readiness failure even when the
       ticket itself is well written.
-- [ ] **Sequencing is clear from the ticket's place in the backlog**, not from
-      a priority field. This project treats every ticket as equal priority,
-      since all of it needs to be done — don't flag a missing priority as a
-      readiness gap. What still needs to be unambiguous is which milestone or
-      section the ticket belongs to, since that ordering is what actually
-      tells a coding agent (or a person) what to pick up next.
+- [ ] **No priority field needed.** This project has no priority field and
+      none should be added. Every ticket is treated as equal priority;
+      sequencing comes from where the ticket sits in the backlog and
+      milestone (the AVH01 through AVH22 proposal phase codes), decided by
+      the humans running the project. Leave priority unset — don't flag a
+      missing priority as a defect.
 
 If a ticket fails one of these, it can still be fine for a person to pick up,
 but say explicitly that it is not ready to hand to an agent until fixed —

@@ -1,11 +1,11 @@
 ---
 name: triage-ticket
-description: Scrutinize a user story / Jira ticket for quality and AI-readiness. Use when the user pastes a ticket, user story, or requirements text and asks to triage, review, scrutinize, grade, or check it before implementation. Input is free-form text (Jira-style), NOT JSON.
+description: Scrutinize a Linear issue for quality and AI-readiness. Use when the user pastes a ticket, user story, or requirements text and asks to triage, review, scrutinize, grade, or check it before implementation. Input is free-form text, NOT JSON.
 ---
 
 # Triage Ticket
 
-Scrutinize a plain-text user story (e.g. a Jira ticket) and judge whether it is
+Scrutinize a plain-text user story (a Linear issue) and judge whether it is
 clear, complete, and unambiguous enough to implement correctly — especially by an
 AI agent that cannot infer missing details. Ambiguous stories cause hallucinated
 business rules, generic design patterns, and wrong edge cases.
@@ -62,7 +62,8 @@ sub issues instead of one flat ticket.
    privacy (e.g. "must not log PII"), payload limits, cost. Without these the
    implementation defaults to generic, possibly slow/insecure choices.
 6. **Metadata** — id/title, author, and created/updated context so the story is
-   traceable. (Often supplied by Jira itself — note if absent.)
+   traceable. (Often supplied by Linear itself — note if absent.) This
+   project has no priority field; don't flag a missing priority as a gap.
 
 ## Quality rules
 
@@ -98,6 +99,10 @@ sub issues instead of one flat ticket.
 - ❌ **Business decision left for the implementer** — a client-facing or
   scope tradeoff with no stated answer, that a coding agent would otherwise
   have to guess at rather than escalate.
+- This toolkit deliberately has no priority field and no hour-estimation
+  step — don't flag a missing priority or a missing estimate as an issue.
+  Sequencing comes from backlog position and milestone (the AVH01 through
+  AVH22 proposal phase codes).
 - ❌ **Should be a parent with sub issues, not one flat ticket** — the ticket
   bundles more than one independently-verifiable build phase (a new content
   type, several components to build, distinct phases like data model →
@@ -105,11 +110,6 @@ sub issues instead of one flat ticket.
   in one pass. This is different from "multiple stories in one" — the work
   belongs together under one parent, it just isn't one unit of work. See
   [[ticket-standards]] section 6.
-
-This project deliberately has no priority field and no hour-estimation step —
-every ticket is equal priority since all of it needs to be done, and an
-estimate isn't something a coding agent consumes to do the work correctly.
-Don't flag a missing priority or a missing estimate as an issue.
 
 ## Output format
 
@@ -133,7 +133,7 @@ Don't flag a missing priority or a missing estimate as an issue.
 - Decisions reserved for a human: ✅/⚠️/❌ — <note>
 - No duplicate/overlap on the board: ✅/⚠️/❌ — <note>
 - No duplicate/overlapping content type: ✅/⚠️/❌ — <note>
-- Milestone matches actual scope: ✅/⚠️/❌ — <note>
+- Milestone matches actual scope (AVH code): ✅/⚠️/❌ — <note>
 - Right-sized, or already a parent with sub issues: ✅/⚠️/❌ — <note>
 
 ### Issues found
